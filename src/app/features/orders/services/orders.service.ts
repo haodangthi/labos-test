@@ -6,16 +6,15 @@ import { map } from "rxjs/operators";
 @Injectable({
     providedIn: 'root'
 })
-export class PatientsService {
-    patientsUrl = 'https://api.mocki.io/v2/51597ef3';
+export class OrdersService {
+    ordersUrl = 'https://api.mocki.io/v2/79fb05cb';
     constructor(
         private readonly httpClient: HttpClient,
     ) {}
 
-    getPatients(): Observable<any> {
+    getOrders(): Observable<any> {
         return this.httpClient
-            .get(this.patientsUrl)
-            .pipe(map((response: { patient: any[]}) => response.patient))
+            .get(this.ordersUrl)
+            .pipe(map((response: { order: any[]}) => response.order))
     }
 }
-

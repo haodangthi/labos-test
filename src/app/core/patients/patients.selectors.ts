@@ -1,7 +1,7 @@
 import { createSelector } from "@ngrx/store";
 import { selectPatientsState } from "../core.state";
 import { PatientsState } from "./patients.model";
-import {MatTableDataSource} from "@angular/material/table";
+import { MatTableDataSource } from "@angular/material/table";
 
 export const selectPatients = createSelector(
     selectPatientsState,

@@ -1,18 +1,23 @@
 <div class="container">
   <div rtl>
-    <h1 class="main-heading">{{ 'stms.patients.title' | translate }}</h1>
+    <h1 *ngIf="!isFavourites" class="main-heading">{{ 'stms.patients.title' | translate }}</h1>
+    <h1 *ngIf="isFavourites" class="main-heading">{{ 'stms.patients.title-fave' | translate }}</h1>
     <div class="actions">
       <a mat-raised-button class="actions-main" color="primary" routerLink=""(click)="getPatients()">
         {{ 'stms.patients.get-patients' | translate }}
       </a>
-      <a mat-raised-button class="actions-favourites" color="primary" routerLink="favourites">
+      <a *ngIf="!isFavourites" mat-raised-button class="actions-favourites" color="primary" routerLink="favourites">
         {{ 'stms.patients.get-patients-faves' | translate }}
       </a>
     </div>
 
-    <mat-form-field *ngIf="isFavourites && (patients$ | async).data.length">
+    <div *ngIf="isFavourites && !(patients$ | async).data.length">
+      No favourite patients
+    </div>
+
+    <mat-form-field *ngIf="isFavourites && (patients$ | async).data.length;">
       <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Filter by first name">
     </mat-form-field>
 
     <table *ngIf="(patients$ | async).data.length" mat-table [dataSource]="patients$ | async" class="mat-elevation-z8">

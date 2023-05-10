@@ -27,9 +27,12 @@
   "stms.settings.title": "Settings",
 
   "stms.patients.title": "Patients",
+  "stms.patients.title-fave": "Favourite Patients",
   "stms.patients.get-patients": "Get patients",
-  "stms.patients.get-patients-faves": "Get patients favourites",
+  "stms.patients.get-patients-faves": "Get favourite patients",
 
   "stms.orders.title": "Orders",
-  "stms.orders.get-orders": "Get orders"
+  "stms.orders.title-fave": "Favourite Orders",
+  "stms.orders.get-orders": "Get orders",
+  "stms.orders.get-orders-faves": "Get favourite orders"
 }

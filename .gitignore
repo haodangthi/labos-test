@@ -6,3 +6,5 @@
 
 # System Files
 .DS_Store
+*.xml
+*.iml
