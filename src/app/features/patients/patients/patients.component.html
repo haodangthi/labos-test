@@ -1,0 +1,57 @@
+<div class="container">
+  <div rtl>
+    <h1 class="main-heading">{{ 'stms.patients.title' | translate }}</h1>
+    <div class="actions">
+      <a mat-raised-button class="actions-main" color="primary" routerLink=""(click)="getPatients()">
+        {{ 'stms.patients.get-patients' | translate }}
+      </a>
+      <a mat-raised-button class="actions-favourites" color="primary" routerLink="favourites">
+        {{ 'stms.patients.get-patients-faves' | translate }}
+      </a>
+    </div>
+
+    <mat-form-field *ngIf="isFavourites && (patients$ | async).data.length">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+    </mat-form-field>
+
+    <table *ngIf="(patients$ | async).data.length" mat-table [dataSource]="patients$ | async" class="mat-elevation-z8">
+      <ng-container matColumnDef="age">
+        <th mat-header-cell *matHeaderCellDef> Age </th>
+        <td mat-cell *matCellDef="let element"> {{calculateAge(element.birthDate.formattedDate)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Full Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.fullName}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sex">
+        <th mat-header-cell *matHeaderCellDef> Sex </th>
+        <td mat-cell *matCellDef="let element"> {{element.sex.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef> Code </th>
+        <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fave">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <button
+              [color]="this.patientsMap.get(element.defaultId) ? 'warn' : 'primary'"
+              mat-icon-button
+              aria-label="add to favourites"
+              (click)="toggleFavourite(element.defaultId)"
+          >
+            <fa-icon icon="heart"></fa-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>
