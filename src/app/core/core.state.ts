@@ -16,12 +16,15 @@ import { settingsReducer } from './settings/settings.reducer';
 import { SettingsState } from './settings/settings.model';
 import { PatientsState } from "./patients/patients.model";
 import { patientsReducer } from "./patients/patients.reducer";
+import { OrdersState } from "./orders/orders.model";
+import { ordersReducer } from "./orders/orders.reducer";
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
   patients: patientsReducer,
   settings: settingsReducer,
-  router: routerReducer
+  router: routerReducer,
+  orders: ordersReducer
 };
 
 export const metaReducers: MetaReducer<AppState>[] = [
@@ -53,9 +56,15 @@ export const selectPatientsState  = createFeatureSelector<
     PatientsState
 >('patients');
 
+export const selectOrdersState  = createFeatureSelector<
+    AppState,
+    OrdersState
+>('orders');
+
 export interface AppState {
   auth: AuthState;
   settings: SettingsState;
   patients: PatientsState;
+  orders: OrdersState;
   router: RouterReducerState<RouterStateUrl>;
 }

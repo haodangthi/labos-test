@@ -1,18 +1,18 @@
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from "@angular/core";
 
-import {AppState} from "../../../core/core.module";
-import {select, Store} from "@ngrx/store";
+import { AppState } from "../../../core/core.module";
+import { select, Store } from "@ngrx/store";
 import {
   addToFavourites,
   filterFavourites,
   getPatients,
   removeFromFavourites
 } from "../../../core/patients/patients.actions";
-import {selectPatients, selectPatientsFavourites, selectPatientsMap} from "../../../core/patients/patients.selectors";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { selectPatients, selectPatientsFavourites, selectPatientsMap } from "../../../core/patients/patients.selectors";
+import { Observable, Subject } from "rxjs";
 import { Router } from "@angular/router";
-import {MatTableDataSource} from "@angular/material/table";
+import { MatTableDataSource } from "@angular/material/table";
+import { takeUntil } from "rxjs/operators";
 
 @Component({
   selector: "st-patients",
@@ -20,12 +20,12 @@ import {MatTableDataSource} from "@angular/material/table";
   styleUrls: ["./patients.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientsComponent implements OnInit {
+export class PatientsComponent implements OnInit, OnDestroy {
   patients$: Observable<MatTableDataSource<any>>;
   displayedColumns: string[] = ['name', 'sex', 'age', 'code', 'fave' ];
   patientsMap = new Map<string, boolean>();
   isFavourites: boolean = false;
-  dataSource;
+  ngDestroyed$ = new Subject();
 
   constructor(
       private store: Store<AppState>,
@@ -33,29 +33,19 @@ export class PatientsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.router.url.includes('favourites')) {
-      this.isFavourites = true;
+    const isFavouritesPage = this.router.url.includes('favourites');
 
-      this.patients$ = this.store.pipe(
-          select(selectPatientsFavourites)
-      )
-    } else {
-      this.patients$ = this.store
-          .pipe(
-              select(selectPatients)
-          )
-      ;
+    if (isFavouritesPage) {
+      this.isFavourites = true;
     }
 
-    this.store.pipe(
-        select(selectPatientsMap),
-    ).subscribe(data => {
-      this.patientsMap = data
-    });
+    this.setPatients(isFavouritesPage);
+    this.subscribeToPatientsFavouritesMap();
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
+
     this.store.dispatch(filterFavourites({
       query: filterValue.trim().toLowerCase()
     }));
@@ -88,5 +78,28 @@ export class PatientsComponent implements OnInit {
     this.store.dispatch(filterFavourites({
       query: ''
     }));
+    this.ngDestroyed$.next();
+  }
+
+  private setPatients(isFavouritesPage: boolean): void {
+    this.patients$ = isFavouritesPage
+        ? this.store.pipe(
+            select(selectPatientsFavourites),
+            takeUntil(this.ngDestroyed$)
+        )
+        : this.store
+            .pipe(
+                select(selectPatients),
+                takeUntil(this.ngDestroyed$)
+            );
+  }
+
+  private subscribeToPatientsFavouritesMap(): void {
+    this.store.pipe(
+        select(selectPatientsMap),
+        takeUntil(this.ngDestroyed$)
+    ).subscribe(data => {
+      this.patientsMap = data;
+    });
   }
 }
